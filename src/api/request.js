@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useStore } from 'vuex'
+
 import { getItem } from '@/utils/storage'
 
 const instance = axios.create({
@@ -10,7 +10,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
     function(config) {
         // 在发送请求之前做些什么
-        const token = getItem('token')
+        const token = getItem('token') || ''
         config.headers.Authorization = 'Bearer ' + token
         return config
     },

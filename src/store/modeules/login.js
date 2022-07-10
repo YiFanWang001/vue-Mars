@@ -1,26 +1,38 @@
 import { login } from '@/api/Login'
-import { setItem, getItem } from '@/utils/storage'
+
+import { setItem, getItem, removeAllItem } from '@/utils/storage'
 import router from '@/router'
 // const router = useRouter()
 export default {
     namespaced: true,
     state: {
         token: getItem('token') || '',
+        userEmail: getItem('Email') || '',
+        userName: getItem('Name') || ''
     },
     getters: {},
-    mutations: {},
+    mutations: {
+        getlogin(state, data) {
+            state.token = data.token
+            setItem('token', data.token)
+            setItem('Email', data.userEmail)
+            setItem('Name', data.userName)
+        }
+    },
     actions: {
         async login({ commit }, form) {
-            console.log(form)
-            try {
-                const { data } = await login(form)
-                setItem('token', data.data.token)
-                if (data.data.token) {
-                    router.push('/')
-                }
-            } catch (error) {
-                console.log(error)
+            const { data } = await login(form)
+            console.log(data)
+            if (data.data.token) {
+                commit('getlogin', data.data)
+                router.push('/')
             }
         },
-    },
+        async error({ commit }) {
+            try {
+                removeAllItem()
+                router.push('/login')
+            } catch (error) {}
+        }
+    }
 }
